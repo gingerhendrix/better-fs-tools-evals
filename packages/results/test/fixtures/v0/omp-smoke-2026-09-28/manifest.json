@@ -1,0 +1,18 @@
+{
+  "created": "2026-09-28T12:32:59.944Z",
+  "fixtures": "/fixtures-not-present/omp-edit",
+  "models": [
+    "xiaomi/mimo-v2.6-flash",
+    "nvidia/nemotron-3-ultra-550b-a55b"
+  ],
+  "arms": [
+    "edit",
+    "patch"
+  ],
+  "tasks": [
+    "call-swap-call-args-001"
+  ],
+  "attempts": 1,
+  "maxSteps": 20,
+  "earlyStop": true
+}

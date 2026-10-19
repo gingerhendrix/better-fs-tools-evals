@@ -1,0 +1,149 @@
+{
+  "created": "2026-10-18T01:19:36.287Z",
+  "fixtures": "/fixtures-not-present/explicit-edit",
+  "models": [
+    "z-ai/glm-5.3-flash"
+  ],
+  "arms": [
+    "edit-exact",
+    "bash"
+  ],
+  "tasks": [
+    "literal-1-regex-plain",
+    "literal-1-quotes-plain",
+    "literal-1-crlf-plain",
+    "literal-1-tabs-plain",
+    "literal-1-no-final-newline-plain",
+    "unicode-fix-1-cyrillic-a-unicode",
+    "unicode-fix-1-decomposed-unicode",
+    "unicode-fix-1-minus-unicode",
+    "unicode-fix-1-narrow-space-unicode",
+    "unicode-fix-1-nbsp-unicode",
+    "unicode-fix-1-nonbreaking-hyphen-unicode",
+    "unicode-fix-1-word-joiner-unicode",
+    "unicode-fix-1-zero-width-unicode"
+  ],
+  "attempts": 1,
+  "provenance": {
+    "harnessGitSha": "657ff14476ea3a2eebef0aead0a028d1a285d17b",
+    "packageVersions": {
+      "@ai-sdk/openai": "4.0.78",
+      "@ai-sdk/openai-compatible": "3.0.57",
+      "@better-fs-tools/ai-sdk": "0.2.0",
+      "@better-fs-tools/fs": "0.2.0",
+      "@better-fs-tools/node": "0.2.0",
+      "@better-fs-tools/read": "0.2.0",
+      "@better-fs-tools/shell": "0.2.0",
+      "@better-fs-tools/write": "0.2.0",
+      "ai": "7.0.116",
+      "diff": "8.0.4",
+      "prettier": "3.9.6",
+      "react": "19.2.8",
+      "react-dom": "19.2.8"
+    },
+    "upstreamBenchmarkCommits": [
+      "88cc7743e4fe99f57e3d1e9a4650288982540975"
+    ],
+    "fixtures": [
+      {
+        "id": "literal-1-regex-plain",
+        "verify": "exact",
+        "fixtureSha256": "6b3097aeb9b505ba09d189c09aeae957e77b5fdb0dc1e7012b537ee63760c37d"
+      },
+      {
+        "id": "literal-1-quotes-plain",
+        "verify": "exact",
+        "fixtureSha256": "ed1871d42da6b581218694062e15cdecfe16c1bb170c7cc7ebc80d2b69ec0e81"
+      },
+      {
+        "id": "literal-1-crlf-plain",
+        "verify": "exact",
+        "fixtureSha256": "683470b1b0449ee1e0be6495b3a760b183ddd1a70e8db1240185b4adcdf688ce"
+      },
+      {
+        "id": "literal-1-tabs-plain",
+        "verify": "exact",
+        "fixtureSha256": "e030ad212bb33267a063ec3b082b0576145ddef63f3a06335f926cf086b06920"
+      },
+      {
+        "id": "literal-1-no-final-newline-plain",
+        "verify": "exact",
+        "fixtureSha256": "ef3305ece2675cf95ce75e3c0d554957fdeb57e63e597cfa87052ca626b9677c"
+      },
+      {
+        "id": "unicode-fix-1-cyrillic-a-unicode",
+        "verify": "exact",
+        "fixtureSha256": "fa7fccf850f99e22e1bfb2ae016be4f8d25bd3aedb0b88bf1a980594a2a07ad4"
+      },
+      {
+        "id": "unicode-fix-1-decomposed-unicode",
+        "verify": "exact",
+        "fixtureSha256": "368f09fa3a869d3503e7ee3ee890de8c0629517256bb5f3378aa223253a76ab0"
+      },
+      {
+        "id": "unicode-fix-1-minus-unicode",
+        "verify": "exact",
+        "fixtureSha256": "60401e9c6b3741f9fd8a6bf7cf6e6974aca8d725ac967711019698e33a49bdb6"
+      },
+      {
+        "id": "unicode-fix-1-narrow-space-unicode",
+        "verify": "exact",
+        "fixtureSha256": "0414c0a0fe82d53a1799def579b744b1dfb4eac5fe06ffc42eec726e7a660c02"
+      },
+      {
+        "id": "unicode-fix-1-nbsp-unicode",
+        "verify": "exact",
+        "fixtureSha256": "3000e438470748b69eb4734c12f3dc78e65318ed86a66335da06b52cae7be5a2"
+      },
+      {
+        "id": "unicode-fix-1-nonbreaking-hyphen-unicode",
+        "verify": "exact",
+        "fixtureSha256": "982fa16e35cc4307993c4b11f293a19d70c16a8292e79f641a556c3ab339bb38"
+      },
+      {
+        "id": "unicode-fix-1-word-joiner-unicode",
+        "verify": "exact",
+        "fixtureSha256": "45c2dbe1dd3f954f56931323c9d2b98ebcc0cbebbe171b389b5dc1e8be0afb4c"
+      },
+      {
+        "id": "unicode-fix-1-zero-width-unicode",
+        "verify": "exact",
+        "fixtureSha256": "3f6afb06e00646feab310d7a76305eb213862d06f58535acc97a1081a1c83e20"
+      }
+    ],
+    "armSettings": [
+      {
+        "name": "edit-exact",
+        "tools": [
+          "read",
+          "edit",
+          "write"
+        ],
+        "requireRead": "off",
+        "matchers": [
+          "exact"
+        ],
+        "sandbox": null
+      },
+      {
+        "name": "bash",
+        "tools": [
+          "bash"
+        ],
+        "requireRead": "off",
+        "matchers": [],
+        "sandbox": "bwrap"
+      }
+    ],
+    "cachePinning": {
+      "provider": "codex-oauth",
+      "scope": "run",
+      "body": "prompt_cache_key",
+      "header": "session-id"
+    }
+  },
+  "stepTimeoutMs": 600000,
+  "keepWorkspace": true,
+  "maxSteps": 40,
+  "earlyStop": false
+}

@@ -1,0 +1,32 @@
+{
+  "model": "xiaomi/mimo-v2.6-flash",
+  "arm": "patch",
+  "task": "call-swap-call-args-001",
+  "attempt": 1,
+  "difficulty": "easy",
+  "mutationType": "swap-call-args",
+  "passed": true,
+  "verifyError": null,
+  "linesChanged": 0,
+  "end": "matched",
+  "loopError": null,
+  "wallMs": 20008,
+  "metrics": {
+    "steps": 3,
+    "toolCalls": {
+      "read": 1,
+      "apply_patch": 2
+    },
+    "toolErrors": {
+      "apply_patch:thrown": 1
+    },
+    "notes": {
+      "read:continue": 1
+    },
+    "inputTokens": 3466,
+    "cachedInputTokens": 2048,
+    "outputTokens": 262,
+    "reasoningTokens": 93,
+    "toolInputChars": 426
+  }
+}

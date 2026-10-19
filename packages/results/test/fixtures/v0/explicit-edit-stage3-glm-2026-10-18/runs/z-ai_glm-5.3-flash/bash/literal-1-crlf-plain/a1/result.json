@@ -1,0 +1,31 @@
+{
+  "model": "z-ai/glm-5.3-flash",
+  "arm": "bash",
+  "task": "literal-1-crlf-plain",
+  "attempt": 1,
+  "difficulty": null,
+  "mutationType": null,
+  "passed": true,
+  "verifyError": null,
+  "verify": "exact",
+  "damage": [],
+  "linesChanged": 0,
+  "end": "done",
+  "loopError": null,
+  "providerHttpErrors": 0,
+  "wallMs": 8866,
+  "metrics": {
+    "steps": 4,
+    "toolCalls": {
+      "bash": 3
+    },
+    "toolErrors": {},
+    "notes": {},
+    "inputTokens": 2904,
+    "cachedInputTokens": 0,
+    "outputTokens": 414,
+    "reasoningTokens": 158,
+    "toolInputChars": 607,
+    "shortWriteCalls": 0
+  }
+}

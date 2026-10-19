@@ -1,0 +1,41 @@
+{
+  "model": "z-ai/glm-5.3-flash",
+  "arm": "edit-exact",
+  "task": "literal-1-crlf-plain",
+  "attempt": 1,
+  "difficulty": null,
+  "mutationType": null,
+  "passed": false,
+  "verifyError": "content: sample.txt",
+  "verify": "exact",
+  "damage": [
+    {
+      "file": "sample.txt",
+      "kind": "content"
+    }
+  ],
+  "linesChanged": 2,
+  "end": "error",
+  "loopError": "TimeoutError: The operation timed out.",
+  "providerHttpErrors": 0,
+  "wallMs": 602399,
+  "metrics": {
+    "steps": 2,
+    "toolCalls": {
+      "read": 1,
+      "edit": 1
+    },
+    "toolErrors": {
+      "edit:NO_MATCH": 1
+    },
+    "notes": {
+      "edit:no-match": 1
+    },
+    "inputTokens": 2258,
+    "cachedInputTokens": 1088,
+    "outputTokens": 61,
+    "reasoningTokens": 0,
+    "toolInputChars": 134,
+    "shortWriteCalls": 0
+  }
+}

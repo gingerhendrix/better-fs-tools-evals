@@ -1,0 +1,28 @@
+{
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "arm": "patch",
+  "task": "call-swap-call-args-001",
+  "attempt": 1,
+  "difficulty": "easy",
+  "mutationType": "swap-call-args",
+  "passed": true,
+  "verifyError": null,
+  "linesChanged": 0,
+  "end": "matched",
+  "loopError": null,
+  "wallMs": 2540,
+  "metrics": {
+    "steps": 2,
+    "toolCalls": {
+      "read": 1,
+      "apply_patch": 1
+    },
+    "toolErrors": {},
+    "notes": {},
+    "inputTokens": 2883,
+    "cachedInputTokens": 0,
+    "outputTokens": 216,
+    "reasoningTokens": 0,
+    "toolInputChars": 639
+  }
+}
