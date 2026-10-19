@@ -1,0 +1,41 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/cli"
+    },
+    {
+      "path": "./apps/viewer"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/harbor"
+    },
+    {
+      "path": "./packages/providers"
+    },
+    {
+      "path": "./packages/results"
+    },
+    {
+      "path": "./packages/runner"
+    },
+    {
+      "path": "./packages/scorers/files"
+    },
+    {
+      "path": "./packages/sources/explicit-edit"
+    },
+    {
+      "path": "./packages/sources/omp-edit"
+    },
+    {
+      "path": "./packages/tools"
+    },
+    {
+      "path": "./scripts"
+    }
+  ]
+}

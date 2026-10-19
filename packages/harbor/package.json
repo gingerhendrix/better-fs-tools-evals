@@ -1,0 +1,21 @@
+{
+  "name": "@bfe/harbor",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Harbor agent: Docker file system and command runner, the TS agent script, and the Python BaseAgent.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@better-fs-tools/ai-sdk": "catalog:",
+    "@better-fs-tools/fs": "catalog:",
+    "@better-fs-tools/node": "catalog:",
+    "@better-fs-tools/shell": "catalog:",
+    "@bfe/core": "workspace:*",
+    "@bfe/providers": "workspace:*",
+    "@bfe/results": "workspace:*",
+    "@bfe/runner": "workspace:*",
+    "ai": "catalog:"
+  }
+}

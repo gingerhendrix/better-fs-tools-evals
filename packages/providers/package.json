@@ -1,0 +1,16 @@
+{
+  "name": "@bfe/providers",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Model access: Command Code and Codex OAuth models, with HTTP logging.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "catalog:",
+    "@ai-sdk/openai-compatible": "3.0.57",
+    "@bfe/core": "workspace:*",
+    "ai": "catalog:"
+  }
+}

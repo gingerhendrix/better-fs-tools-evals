@@ -1,0 +1,17 @@
+{
+  "name": "@bfe/viewer",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Browser viewer for run folders, scores, and full traces.",
+  "type": "module",
+  "dependencies": {
+    "@bfe/core": "workspace:*",
+    "@bfe/results": "workspace:*",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5"
+  }
+}

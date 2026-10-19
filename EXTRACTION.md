@@ -5,13 +5,13 @@ This repository holds the Better FS Tools eval harness. The harness came from th
 
 ## Source
 
-| Item | Value |
-|---|---|
-| Source repository | `better-fs-tools` (local worktrees under `repos/better-fs-tools/`) |
-| Branch `feature-eval-harness` | `e0ab601750ffe5e8c31dbf49c4d79c9bde988a0d` |
-| Branch `feature-eval-explicit-edit` | `657ff14476ea3a2eebef0aead0a028d1a285d17b` |
-| Merge base with tool `main` | `77b3d76a0b86406718e08037485f8877f42c2c32` |
-| Combined tree | `692786d5e6b05e5c5651a8d84188306720e4b6b4` |
+| Item                                | Value                                                              |
+| ----------------------------------- | ------------------------------------------------------------------ |
+| Source repository                   | `better-fs-tools` (local worktrees under `repos/better-fs-tools/`) |
+| Branch `feature-eval-harness`       | `e0ab601750ffe5e8c31dbf49c4d79c9bde988a0d`                         |
+| Branch `feature-eval-explicit-edit` | `657ff14476ea3a2eebef0aead0a028d1a285d17b`                         |
+| Merge base with tool `main`         | `77b3d76a0b86406718e08037485f8877f42c2c32`                         |
+| Combined tree                       | `692786d5e6b05e5c5651a8d84188306720e4b6b4`                         |
 
 The two branches had diverged. `feature-eval-explicit-edit` was two commits ahead of
 `feature-eval-harness`, and one commit behind it. The combined tree is the output of

@@ -1,0 +1,11 @@
+{
+  "name": "@bfe/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Contracts for the evals: task, result, score, and metric types, run folder paths, and the fixture folder loader.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {}
+}

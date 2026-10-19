@@ -1,0 +1,19 @@
+{
+  "name": "@bfe/tools",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Tool arms and the bwrap bash sandbox. The only package that builds Better FS Tools tool sets for matrix runs.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@better-fs-tools/ai-sdk": "catalog:",
+    "@better-fs-tools/node": "catalog:",
+    "@better-fs-tools/read": "catalog:",
+    "@better-fs-tools/shell": "catalog:",
+    "@better-fs-tools/write": "catalog:",
+    "@bfe/core": "workspace:*",
+    "ai": "catalog:"
+  }
+}

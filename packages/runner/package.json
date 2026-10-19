@@ -1,0 +1,17 @@
+{
+  "name": "@bfe/runner",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Agent loop, step metrics, prompts, provenance, and cell and matrix runs.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@bfe/core": "workspace:*",
+    "@bfe/providers": "workspace:*",
+    "@bfe/results": "workspace:*",
+    "@bfe/tools": "workspace:*",
+    "ai": "catalog:"
+  }
+}

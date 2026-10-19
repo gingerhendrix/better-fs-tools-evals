@@ -1,0 +1,16 @@
+{
+  "name": "@bfe/source-explicit-edit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Explicit Edit suites and the fixture exporter.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@bfe/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@bfe/scorer-files": "workspace:*"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@bfe/cli",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The bfe command line: run, report, and list.",
+  "bin": {
+    "bfe": "./src/cli.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "@bfe/core": "workspace:*",
+    "@bfe/results": "workspace:*",
+    "@bfe/runner": "workspace:*",
+    "@bfe/scorer-files": "workspace:*",
+    "@bfe/source-explicit-edit": "workspace:*",
+    "@bfe/source-omp-edit": "workspace:*",
+    "@bfe/tools": "workspace:*"
+  }
+}

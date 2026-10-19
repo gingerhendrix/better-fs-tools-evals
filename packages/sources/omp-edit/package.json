@@ -1,0 +1,13 @@
+{
+  "name": "@bfe/source-omp-edit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Oh My Pi typescript-edit-benchmark suites.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@bfe/core": "workspace:*"
+  }
+}
