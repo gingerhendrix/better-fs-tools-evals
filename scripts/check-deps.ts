@@ -29,6 +29,7 @@ const ALLOWED: Readonly<
   "@bfe/scorer-files": { bfe: ["@bfe/core"] },
   "@bfe/source-omp-edit": { bfe: ["@bfe/core"] },
   "@bfe/source-explicit-edit": { bfe: ["@bfe/core"] },
+  "@bfe/source-delegate52": { bfe: ["@bfe/core"] },
   "@bfe/harbor": {
     bfe: ["@bfe/core", "@bfe/providers", "@bfe/results", "@bfe/runner"],
     tools: true,
@@ -39,6 +40,7 @@ const ALLOWED: Readonly<
       "@bfe/results",
       "@bfe/runner",
       "@bfe/scorer-files",
+      "@bfe/source-delegate52",
       "@bfe/source-explicit-edit",
       "@bfe/source-omp-edit",
       "@bfe/tools",

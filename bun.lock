@@ -23,6 +23,7 @@
         "@bfe/results": "workspace:*",
         "@bfe/runner": "workspace:*",
         "@bfe/scorer-files": "workspace:*",
+        "@bfe/source-delegate52": "workspace:*",
         "@bfe/source-explicit-edit": "workspace:*",
         "@bfe/source-omp-edit": "workspace:*",
         "@bfe/tools": "workspace:*",
@@ -97,6 +98,13 @@
         "@bfe/core": "workspace:*",
         "diff": "^8.0.2",
         "prettier": "^3.6.2",
+      },
+    },
+    "packages/sources/delegate52": {
+      "name": "@bfe/source-delegate52",
+      "version": "0.0.0",
+      "dependencies": {
+        "@bfe/core": "workspace:*",
       },
     },
     "packages/sources/explicit-edit": {
@@ -178,6 +186,8 @@
     "@bfe/runner": ["@bfe/runner@workspace:packages/runner"],
 
     "@bfe/scorer-files": ["@bfe/scorer-files@workspace:packages/scorers/files"],
+
+    "@bfe/source-delegate52": ["@bfe/source-delegate52@workspace:packages/sources/delegate52"],
 
     "@bfe/source-explicit-edit": ["@bfe/source-explicit-edit@workspace:packages/sources/explicit-edit"],
 

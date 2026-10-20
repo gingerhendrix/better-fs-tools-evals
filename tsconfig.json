@@ -26,6 +26,9 @@
       "path": "./packages/scorers/files"
     },
     {
+      "path": "./packages/sources/delegate52"
+    },
+    {
       "path": "./packages/sources/explicit-edit"
     },
     {
