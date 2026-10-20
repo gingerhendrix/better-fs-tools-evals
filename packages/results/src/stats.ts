@@ -91,3 +91,13 @@ export function shortModel(model: string): string {
 export const fmtInt = (n: number) => Math.round(n).toLocaleString("en-GB");
 export const fmtUsd = (n: number | null) => (n === null ? "-" : `$${n.toFixed(n < 1 ? 4 : 2)}`);
 export const fmtSecs = (ms: number | null) => (ms === null ? "-" : `${(ms / 1000).toFixed(1)}`);
+export const fmtScore = (n: number | null) => (n === null ? "-" : n.toFixed(3));
+
+/** The mean of the graded scores, or null when no run has one. */
+export function meanScore(runs: readonly RunRow[]): number | null {
+  const scores = runs.map((r) => r.score).filter((s): s is number => s !== null);
+  return scores.length === 0 ? null : scores.reduce((a, b) => a + b, 0) / scores.length;
+}
+
+/** The label of a run's attempt: `i<n>` for a relay interaction, `a<n>` otherwise. */
+export const attemptLabel = (run: RunRow) => `${run.kind === "relays" ? "i" : "a"}${run.attempt}`;

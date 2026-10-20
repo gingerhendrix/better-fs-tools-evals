@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { readJson } from "./catalog.ts";
+import type { BatchKind } from "./catalog.ts";
+import { isRecord, readJson } from "./fs-json.ts";
 
 /** One line of `steps.jsonl`, with provider metadata removed. */
 export interface TraceStep {
@@ -34,24 +35,47 @@ export interface Trace {
   /** Tool call id to the text the model received, from the next request body. */
   readonly toolOutputs: Record<string, string>;
   readonly http: readonly HttpCall[];
+  /** Files after the run: a relay's `snapshot.json`. */
+  readonly files: Readonly<Record<string, string>> | null;
+  /** The diff the verifier scored: a Harbor trial's `verifier/patch.diff`. */
+  readonly patch: string | null;
 }
 
-/** Reads one cell folder. Every file is optional, so a run that stopped early still shows. */
-export async function loadTrace(dir: string): Promise<Trace> {
-  const steps = (await readJsonLines(join(dir, "steps.jsonl"))).map(toStep);
-  const requests = await readJsonLines(join(dir, "http.jsonl"));
+/**
+ * Reads one run folder. Every file is optional, so a run that stopped early still shows.
+ * A relay interaction keeps its result in `interaction.json`. A Harbor trial keeps the
+ * trace files in `agent/` and the scored diff in `verifier/`.
+ */
+export async function loadTrace(dir: string, kind: BatchKind = "cells"): Promise<Trace> {
+  const traceDir = kind === "harbor" ? join(dir, "agent") : dir;
+  const steps = (await readJsonLines(join(traceDir, "steps.jsonl"))).map(toStep);
+  const requests = await readJsonLines(join(traceDir, "http.jsonl"));
   const first = requests[0]?.request;
   const toolOutputs: Record<string, string> = {};
   for (const line of requests) collectToolOutputs(line.request, toolOutputs);
+  const snapshot = kind === "relays" ? await readJson<unknown>(join(dir, "snapshot.json")) : null;
   return {
-    result: await readJson(join(dir, "result.json")),
+    result: await readJson(join(traceDir, kind === "relays" ? "interaction.json" : "result.json")),
     system: isRecord(first) ? systemText(first) : null,
     prompt: isRecord(first) ? promptText(first) : null,
     tools: isRecord(first) && Array.isArray(first.tools) ? first.tools.map(toTool) : [],
     steps,
     toolOutputs,
     http: requests.map(toHttpCall),
+    files: isRecord(snapshot) && isRecord(snapshot.files) ? stringValues(snapshot.files) : null,
+    patch:
+      kind === "harbor"
+        ? await readFile(join(dir, "verifier", "patch.diff"), "utf8").catch(() => null)
+        : null,
   };
+}
+
+function stringValues(record: Record<string, unknown>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [key, value] of Object.entries(record)) {
+    out[key] = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+  }
+  return out;
 }
 
 async function readJsonLines(file: string): Promise<Array<Record<string, unknown>>> {
@@ -146,8 +170,4 @@ function toHttpCall(line: Record<string, unknown>): HttpCall {
     status,
     error: status !== 200 ? (body ?? "").slice(0, 2000) : null,
   };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }

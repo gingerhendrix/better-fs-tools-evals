@@ -73,7 +73,9 @@ describe("scanCatalog", () => {
       toolCalls: 2,
       toolErrors: 2,
     });
-    expect(catalog.runDirs.get(row.id)).toEndWith(join("task-001", "a1"));
+    expect(row.kind).toBe("cells");
+    expect(catalog.runDirs.get(row.id)?.kind).toBe("cells");
+    expect(catalog.runDirs.get(row.id)?.dir).toEndWith(join("task-001", "a1"));
   });
 
   test("keeps a cell with no result.json as an incomplete run", async () => {
