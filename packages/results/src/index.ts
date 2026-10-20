@@ -9,6 +9,14 @@ export type { TaskFlags } from "./flags.ts";
 export { COMMAND_CODE_RATE_CARD, runCostUsd } from "./pricing.ts";
 export type { TokenRate, TokenRateCard } from "./pricing.ts";
 export { collectResults, readCellResult } from "./read.ts";
+export {
+  collectRelays,
+  CRITICAL_DROP,
+  criticalErrors,
+  interactionCostUsd,
+  relayReport,
+  relayScores,
+} from "./relay-report.ts";
 export { markdownReport, summarise } from "./report.ts";
 export type { GroupSummary } from "./report.ts";
 export { loadTrace, partsText } from "./trace.ts";

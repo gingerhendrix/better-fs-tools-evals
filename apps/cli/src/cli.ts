@@ -3,6 +3,7 @@
  * bun run eval run    --fixtures <dir> --out <dir> [--models a,b] [--arms edit,patch] [--suite poc-12 | --tasks id,id] [--attempts 1] [--concurrency 4] [--max-steps 20]
  * bun run eval report --out <dir>
  * bun run eval list
+ * bun run eval d52 ... and bun run eval d52-report ... (see d52.ts)
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -14,7 +15,14 @@ import { runMatrix, runProvenance } from "@bfe/runner";
 import type { Cell } from "@bfe/runner";
 import { ARMS, findArm } from "@bfe/tools";
 
+import { d52Command } from "./d52.ts";
 import { SCORERS, SUITES } from "./registry.ts";
+
+// The DELEGATE-52 commands have their own flags, so they parse their own arguments.
+if (process.argv[2] === "d52" || process.argv[2] === "d52-report") {
+  await d52Command(process.argv.slice(2));
+  process.exit(0);
+}
 
 const DEFAULT_MODELS = ["xiaomi/mimo-v2.6-flash", "nvidia/nemotron-3-ultra-550b-a55b"];
 
