@@ -45,17 +45,27 @@ Options for `run`:
 ## View runs in a browser
 
 ```sh
-bun run view <root> [<root> ...] [--port 4317] [--depth 3]
+bun run view <root> [<root> ...] [--port 4317] [--depth 3] [--exclude <text> ...]
 ```
 
-`view` looks for every `run --out` folder (a `manifest.json` beside `runs/`) up to `--depth` levels below each root, and serves a local web app at `http://127.0.0.1:4317/`:
+`view` looks for run folders up to `--depth` levels below each root, and serves a local web app at `http://127.0.0.1:4317/`. It reads three folder kinds:
 
-| Page     | Shows                                                                                                       |
-| -------- | ----------------------------------------------------------------------------------------------------------- |
-| Overview | Each run folder, with a tick to show or hide it, and a model x arm score table for each fixture set         |
-| Tasks    | A task x (model, arm) matrix of passes over graded runs. A task opens its prompt and expected fix           |
-| Runs     | Every run, with filters for fixtures, folder, model, arm, result, task, and tool error code                 |
-| Run      | Score, metrics, prompt, expected fix, system prompt, tools, and every step with the tool text the model saw |
+| Kind     | Folder                                                    | One run row is                                   |
+| -------- | --------------------------------------------------------- | ------------------------------------------------ |
+| `cells`  | A harness `run --out` folder: `manifest.json` and `runs/` | One attempt at one task                          |
+| `relays` | A DELEGATE-52 `d52` folder: `manifest.json` and `relays/` | One interaction `i<nn>`. The task is the sample  |
+| `harbor` | A Harbor job folder: `config.json` and `job.log`          | One trial. The trace comes from `<trial>/agent/` |
+
+A Harbor job sits at `<scratch>/jobs/<name>/<timestamp>/`, so pass `--depth 4` to reach it from a scratch root. `--exclude` leaves out each folder whose id holds the text, for example copies of runs made for a comparison.
+
+| Page     | Shows                                                                                                            |
+| -------- | ---------------------------------------------------------------------------------------------------------------- |
+| Overview | Each run folder and its kind, with a tick to show or hide it, and a model x arm score table for each fixture set |
+| Tasks    | A task x (model, arm) matrix of passes over graded runs. A task opens its prompt and expected fix                |
+| Runs     | Every run, with filters for fixtures, kind, folder, model, arm, result, task, and tool error code                |
+| Run      | Score, metrics, prompt, expected fix, system prompt, tools, and every step with the tool text the model saw      |
+
+A relay step passes when it ends with no loop error and the expected file set. A backward step also needs its score to stay within 0.1 of the round trip before, the paper's critical error line. Its score is the backward-step score. The Run page shows the files after the step. A Harbor trial passes when the verifier reward is 1. Its score is the reward before the threshold. The Run page shows the patch the verifier scored.
 
 Tasks are keyed by fixture folder and id, because two fixture sets can use the same ids. The pass rate is strict: a provider error counts as a fail. A cell with no `result.json` shows as incomplete. **Rescan** reads the folders again, so the view follows a matrix that is still running.
 

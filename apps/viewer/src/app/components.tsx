@@ -3,7 +3,13 @@ import type { ReactNode } from "react";
 
 import type { RunRow } from "@bfe/results";
 import { href } from "./route.ts";
-import { outcome, passRateExcludingErrors, percent, rateColor } from "@bfe/results/stats";
+import {
+  attemptLabel,
+  outcome,
+  passRateExcludingErrors,
+  percent,
+  rateColor,
+} from "@bfe/results/stats";
 import type { Outcome, Tally } from "@bfe/results/stats";
 
 export function OutcomeBadge({ value }: { value: Outcome }) {
@@ -17,9 +23,9 @@ export function RunChip({ run, current = false }: { run: RunRow; current?: boole
     <a
       className={`chip ${o}${current ? " current" : ""}`}
       href={href("run", { id: run.id })}
-      title={`${run.model} / ${run.arm} / a${run.attempt}: ${o}${run.verifyError ? ` (${run.verifyError})` : ""}`}
+      title={`${run.model} / ${run.arm} / ${attemptLabel(run)}: ${o}${run.step ? ` [${run.step}]` : ""}${run.verifyError ? ` (${run.verifyError})` : ""}`}
     >
-      a{run.attempt}
+      {attemptLabel(run)}
     </a>
   );
 }

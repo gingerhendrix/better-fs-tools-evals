@@ -8,16 +8,19 @@ export interface ViewerOptions {
   readonly port: number;
   readonly hostname: string;
   readonly maxDepth: number;
+  /** Batch ids that hold any of these strings are left out. */
+  readonly exclude?: readonly string[];
 }
 
 /**
  * Serves the run viewer. The API reads only folders that the scan found:
- * a trace by run id, a fixture by a (fixtures dir, task id) pair from a manifest.
+ * a trace by run id, a fixture by a (fixtures dir, task id) pair from a harness manifest.
  */
 export async function startViewer(options: ViewerOptions) {
-  let catalog = await scanCatalog(options.roots, options.maxDepth);
+  const scan = { maxDepth: options.maxDepth, exclude: options.exclude ?? [] };
+  let catalog = await scanCatalog(options.roots, scan);
   const rescan = async () => {
-    catalog = await scanCatalog(options.roots, options.maxDepth);
+    catalog = await scanCatalog(options.roots, scan);
     return catalog;
   };
 
@@ -33,9 +36,9 @@ export async function startViewer(options: ViewerOptions) {
       },
       "/api/trace": async (req) => {
         const id = new URL(req.url).searchParams.get("id") ?? "";
-        const dir = catalog.runDirs.get(id);
-        if (dir === undefined) return notFound(`unknown run "${id}"`);
-        return Response.json(await loadTrace(dir));
+        const source = catalog.runDirs.get(id);
+        if (source === undefined) return notFound(`unknown run "${id}"`);
+        return Response.json(await loadTrace(source.dir, source.kind));
       },
       "/api/fixture": async (req) => {
         const params = new URL(req.url).searchParams;
@@ -61,7 +64,9 @@ function indexBody(catalog: Catalog) {
 }
 
 function knownFixture(catalog: Catalog, fixtures: string, task: string): boolean {
-  return catalog.batches.some((b) => b.fixtures === fixtures && b.tasks.includes(task));
+  return catalog.batches.some(
+    (b) => b.kind === "cells" && b.fixtures === fixtures && b.tasks.includes(task),
+  );
 }
 
 const notFound = (message: string) => Response.json({ error: message }, { status: 404 });

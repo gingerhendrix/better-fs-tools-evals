@@ -12,7 +12,9 @@ export function TaskPage({ route }: { route: Route }) {
   const { index, runs } = useData();
   const flaw = index.taskFlags[fixtures]?.flawed[task];
   const rs = runs.filter((r) => (r.fixtures ?? "") === fixtures && r.task === task);
-  const url = fixtures ? `/api/fixture?${new URLSearchParams({ fixtures, task })}` : null;
+  const isFixture = rs.some((r) => r.kind === "cells");
+  const url =
+    fixtures && isFixture ? `/api/fixture?${new URLSearchParams({ fixtures, task })}` : null;
   const { data: fixture, error } = useJson<FixtureView>(url);
   const groups = [...groupBy(rs, (r) => `${r.model}\u0000${r.arm}`).values()].sort(
     (a, b) => a[0]!.model.localeCompare(b[0]!.model) || a[0]!.arm.localeCompare(b[0]!.arm),

@@ -5,10 +5,12 @@ import { useData } from "./data.tsx";
 import { href } from "./route.ts";
 import {
   fmtInt,
+  fmtScore,
   fmtSecs,
   fmtUsd,
   groupBy,
   mean,
+  meanScore,
   shortModel,
   shortPath,
   tally,
@@ -59,6 +61,7 @@ export function Overview() {
             <tr>
               <th />
               <th>Folder</th>
+              <th>Kind</th>
               <th>Created</th>
               <th>Fixtures</th>
               <th>Models</th>
@@ -84,6 +87,7 @@ export function Overview() {
                   <td>
                     <a href={href("runs", { batch: b.id })}>{b.id}</a>
                   </td>
+                  <td className="small">{b.kind}</td>
                   <td className="nowrap">
                     {b.created ? new Date(b.created).toLocaleString("en-GB") : "-"}
                   </td>
@@ -120,6 +124,8 @@ function ScoreTables() {
         const tasks = new Set(rs.map((r) => r.task)).size;
         const flawed = new Set(rs.filter((r) => r.flawed).map((r) => r.task)).size;
         const hasFlags = index.taskFlags[fixtures] !== undefined;
+        const hasScores = rs.some((r) => r.score !== null);
+        const kinds = [...new Set(rs.map((r) => r.kind))];
         return (
           <section key={fixtures}>
             <h2>
@@ -129,6 +135,19 @@ function ScoreTables() {
                 <a href={href("tasks", { fixtures })}>task matrix</a>
               </span>
             </h2>
+            {kinds.includes("relays") && (
+              <p className="muted small">
+                DELEGATE-52 relays: each run is one interaction. A forward step passes when it ends
+                cleanly with the expected file set. A backward step also needs its score to stay
+                within 0.1 of the round trip before. Score is the mean backward-step score.
+              </p>
+            )}
+            {kinds.includes("harbor") && (
+              <p className="muted small">
+                Harbor trials: pass means verifier reward 1. Score is the reward before its
+                threshold.
+              </p>
+            )}
             {hasFlags && (
               <p className="muted small">
                 {flawed} tasks are marked flawed in task-flags.json. "Clean" scores the other{" "}
@@ -142,6 +161,7 @@ function ScoreTables() {
                   <th>Arm</th>
                   <th>Pass</th>
                   {hasFlags && <th>Clean {tasks - flawed}</th>}
+                  {hasScores && <th>Score</th>}
                   <th>Fail</th>
                   <th>Provider err</th>
                   <th>Steps</th>
@@ -172,6 +192,7 @@ function ScoreTables() {
                           link={href("runs", { fixtures, model, arm, scope: "clean" })}
                         />
                       )}
+                      {hasScores && <td className="num">{fmtScore(meanScore(g))}</td>}
                       <td className="num">
                         <a href={href("runs", { fixtures, model, arm, outcome: "fail" })}>
                           {t.fail}

@@ -7,7 +7,9 @@ import type { RunRow } from "./data.tsx";
 import { href, setParams } from "./route.ts";
 import type { Route } from "./route.ts";
 import {
+  attemptLabel,
   fmtInt,
+  fmtScore,
   fmtSecs,
   fmtUsd,
   inScope,
@@ -35,7 +37,13 @@ const COLUMNS: readonly Column[] = [
   { key: "model", label: "Model", value: (r) => r.model, cell: (r) => shortModel(r.model) },
   { key: "arm", label: "Arm", value: (r) => r.arm },
   { key: "task", label: "Task", value: (r) => r.task },
-  { key: "attempt", label: "Att", value: (r) => r.attempt, num: true },
+  {
+    key: "attempt",
+    label: "Att",
+    value: (r) => r.attempt,
+    cell: (r) => <span title={r.step ?? undefined}>{attemptLabel(r)}</span>,
+    num: true,
+  },
   {
     key: "outcome",
     label: "Result",
@@ -43,6 +51,13 @@ const COLUMNS: readonly Column[] = [
     cell: (r) => <OutcomeBadge value={outcome(r)} />,
   },
   { key: "end", label: "End", value: (r) => r.end },
+  {
+    key: "score",
+    label: "Score",
+    value: (r) => r.score ?? -1,
+    cell: (r) => fmtScore(r.score),
+    num: true,
+  },
   {
     key: "linesChanged",
     label: "Lines off",
@@ -131,6 +146,11 @@ export function Runs({ route }: { route: Route }) {
           "Fixtures",
           options((r) => r.fixtures),
           (v) => shortPath(v || null),
+        )}
+        {select(
+          "kind",
+          "Kind",
+          options((r) => r.kind),
         )}
         {select(
           "batch",
@@ -227,6 +247,7 @@ export function Runs({ route }: { route: Route }) {
 function matches(r: RunRow, params: URLSearchParams): boolean {
   const exact: Array<[string, string]> = [
     ["fixtures", r.fixtures ?? ""],
+    ["kind", r.kind],
     ["batch", r.batch],
     ["model", r.model],
     ["arm", r.arm],

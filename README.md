@@ -11,7 +11,7 @@ bun install
 bun run eval list                                   # arms and suites
 bun run eval run --fixtures <dir> --out <run-dir> --suite smoke --arms edit
 bun run eval report --out <run-dir>
-bun run view <runs-root>                            # http://127.0.0.1:4317/
+bun run view <runs-root>                            # http://127.0.0.1:4317/, also reads DELEGATE-52 and Harbor folders
 bun run fixtures:explicit-edit --clone <upstream-clone> --out <fixtures>
 bun run check                                       # format, lint, import rules, typecheck, tests
 ```

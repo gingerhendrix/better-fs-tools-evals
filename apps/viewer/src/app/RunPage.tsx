@@ -4,7 +4,16 @@ import { DiffBlock, Json, Lazy, OutcomeBadge, Pre, RunChip } from "./components.
 import { useData, useJson } from "./data.tsx";
 import { href } from "./route.ts";
 import type { Route } from "./route.ts";
-import { fmtInt, fmtSecs, fmtUsd, groupBy, outcome, shortPath } from "@bfe/results/stats";
+import {
+  attemptLabel,
+  fmtInt,
+  fmtScore,
+  fmtSecs,
+  fmtUsd,
+  groupBy,
+  outcome,
+  shortPath,
+} from "@bfe/results/stats";
 import { TraceSteps } from "./TraceSteps.tsx";
 
 /** The full trace of one run, with its score and links to the other attempts at the same task. */
@@ -14,7 +23,7 @@ export function RunPage({ route }: { route: Route }) {
   const run = index.runs.find((r) => r.id === id);
   const { data: trace, error } = useJson<Trace>(`/api/trace?id=${encodeURIComponent(id)}`);
   const fixtureUrl =
-    run?.fixtures != null
+    run?.kind === "cells" && run.fixtures !== null
       ? `/api/fixture?${new URLSearchParams({ fixtures: run.fixtures, task: run.task })}`
       : null;
   const { data: fixture } = useJson<FixtureView>(fixtureUrl);
@@ -31,7 +40,8 @@ export function RunPage({ route }: { route: Route }) {
           <OutcomeBadge value={outcome(run)} /> {run.task}
         </h2>
         <p className="muted small">
-          {run.model} · {run.arm} · attempt {run.attempt} · folder{" "}
+          {run.model} · {run.arm} · {attemptLabel(run)}
+          {run.step && <> · {run.step}</>} · folder{" "}
           <a href={href("runs", { batch: run.batch })}>{run.batch}</a> · fixtures{" "}
           <a href={href("task", { fixtures: run.fixtures, task: run.task })}>
             {shortPath(run.fixtures)}
@@ -39,8 +49,11 @@ export function RunPage({ route }: { route: Route }) {
         </p>
         <dl className="facts">
           <Fact label="End state" value={run.end} />
-          <Fact label="Lines off expected" value={run.linesChanged ?? "-"} />
-          <Fact label="Verifier" value={run.verifyError ?? (run.passed ? "match" : "-")} />
+          {run.kind === "cells" && (
+            <Fact label="Lines off expected" value={run.linesChanged ?? "-"} />
+          )}
+          {run.score !== null && <Fact label="Score" value={fmtScore(run.score)} />}
+          <Fact label="Verifier" value={run.verifyError ?? (run.passed ? "pass" : "-")} />
           {run.loopError && <Fact label="Loop error" value={run.loopError} />}
           <Fact label="Steps" value={run.steps} />
           <Fact label="Tool calls" value={run.toolCalls} />
@@ -59,10 +72,12 @@ export function RunPage({ route }: { route: Route }) {
           />
           <Fact label="Wall s" value={fmtSecs(run.wallMs)} />
           <Fact label="Cost" value={fmtUsd(run.costUsd)} />
-          <Fact
-            label="Difficulty"
-            value={`${run.difficulty ?? "-"} / ${run.mutationType ?? "-"}`}
-          />
+          {run.kind === "cells" && (
+            <Fact
+              label="Difficulty"
+              value={`${run.difficulty ?? "-"} / ${run.mutationType ?? "-"}`}
+            />
+          )}
         </dl>
         <Siblings runs={siblings} current={run.id} />
       </section>
@@ -74,15 +89,35 @@ export function RunPage({ route }: { route: Route }) {
             <Lazy summary={<strong>Prompt (user message)</strong>} open>
               {() => <Pre text={trace.prompt ?? fixture?.prompt ?? "(not recorded)"} />}
             </Lazy>
-            <Lazy summary={<strong>Expected fix</strong>} open>
-              {() =>
-                fixture ? (
-                  <DiffBlock text={fixture.expectedDiff} />
-                ) : (
-                  <p className="muted">Fixture not available.</p>
-                )
-              }
-            </Lazy>
+            {run.kind === "cells" && (
+              <Lazy summary={<strong>Expected fix</strong>} open>
+                {() =>
+                  fixture ? (
+                    <DiffBlock text={fixture.expectedDiff} />
+                  ) : (
+                    <p className="muted">Fixture not available.</p>
+                  )
+                }
+              </Lazy>
+            )}
+            {trace.files !== null && (
+              <Lazy
+                summary={<strong>Files after this step ({Object.keys(trace.files).length})</strong>}
+              >
+                {() =>
+                  Object.entries(trace.files ?? {}).map(([name, text]) => (
+                    <Lazy key={name} summary={<span className="label">{name}</span>}>
+                      {() => <Pre text={text} className="tall" />}
+                    </Lazy>
+                  ))
+                }
+              </Lazy>
+            )}
+            {trace.patch !== null && (
+              <Lazy summary={<strong>Patch the verifier scored</strong>}>
+                {() => <DiffBlock text={trace.patch ?? ""} />}
+              </Lazy>
+            )}
             <Lazy summary={<strong>System prompt</strong>}>
               {() => <Pre text={trace.system ?? "(not recorded)"} />}
             </Lazy>
@@ -115,7 +150,11 @@ export function RunPage({ route }: { route: Route }) {
             )}
             <h3>Trace</h3>
             <TraceSteps steps={trace.steps} toolOutputs={trace.toolOutputs} />
-            <Lazy summary={<strong>result.json</strong>}>
+            <Lazy
+              summary={
+                <strong>{run.kind === "relays" ? "interaction.json" : "result.json"}</strong>
+              }
+            >
               {() => <Json value={trace.result} />}
             </Lazy>
           </>
