@@ -233,8 +233,8 @@ export function relayReport(relays: readonly RelayResult[]): string {
 
   lines.push("", "## Exact measures on backward steps", "");
   lines.push(
-    "| Model | Domain | Arm | Backward steps | Byte-exact return | Mean line diff | Final mean line diff | Mean line bloat | File-set errors (fwd / bwd) |",
-    "|---|---|---|---|---|---|---|---|---|",
+    "| Model | Domain | Arm | Backward steps | Byte-exact return | Mean line diff | Final mean line diff | Mean line bloat | File-set errors (fwd / bwd) | Backward steps with extra files |",
+    "|---|---|---|---|---|---|---|---|---|---|",
   );
   for (const g of groupBy(relays, true)) {
     const b = backward(g);
@@ -245,8 +245,11 @@ export function relayReport(relays: readonly RelayResult[]): string {
     });
     const fsFwd = all(g).filter((i) => i.direction === "forward" && !i.fileSet.ok).length;
     const fsBwd = b.filter((i) => !i.fileSet.ok).length;
+    // Upstream counts an extra file as a file-set error only for glob targets.
+    // The json scorer still gives 0 to more than one file, so the report shows extras apart.
+    const extra = b.filter((i) => i.fileSet.extra.length > 0).length;
     lines.push(
-      `| ${g.model} | ${g.domain} | ${g.arm} | ${b.length} | ${exact} (${pct(exact, b.length)}) | ${fmt(mean(b.flatMap((i) => (i.seed ? [i.seed.lineDiff] : []))))} | ${fmt(mean(finals))} | ${fmt(mean(b.flatMap((i) => (i.seed ? [i.seed.lineBloat] : []))))}% | ${fsFwd} / ${fsBwd} |`,
+      `| ${g.model} | ${g.domain} | ${g.arm} | ${b.length} | ${exact} (${pct(exact, b.length)}) | ${fmt(mean(b.flatMap((i) => (i.seed ? [i.seed.lineDiff] : []))))} | ${fmt(mean(finals))} | ${fmt(mean(b.flatMap((i) => (i.seed ? [i.seed.lineBloat] : []))))}% | ${fsFwd} / ${fsBwd} | ${extra} |`,
     );
   }
 

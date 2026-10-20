@@ -84,6 +84,7 @@ test("the report has RS@k columns, the paired difference, and card-rate cost", (
     "| z-ai/glm-5.3-flash | docker | bft-edit | 2 | 100.0 | 90.0 (1) |",
   );
   expect(md).toContain("read_file 4, write_file 4");
+  expect(md).toContain("| 0.0% | 0 / 0 | 0 |");
   expect(md).toMatch(/\| 0\.0008 \|/);
 });
 
