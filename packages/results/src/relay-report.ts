@@ -211,23 +211,31 @@ export function relayReport(relays: readonly RelayResult[]): string {
     );
   }
 
-  lines.push("", "## Paired difference by sample (final RS, bft-edit minus d52-tools)", "");
-  lines.push("| Model | Sample | d52-tools | bft-edit | Difference |", "|---|---|---|---|---|");
-  const finalOf = (r: RelayResult | undefined) => {
-    const s = r === undefined ? [] : relayScores(r);
-    return s.at(-1) ?? null;
+  lines.push(
+    "",
+    "## Paired difference by sample (bft-edit minus d52-tools)",
+    "",
+    "Both scores are taken at the last round trip that both relays reached.",
+    "",
+  );
+  lines.push(
+    "| Model | Sample | Round trip | d52-tools | bft-edit | Difference |",
+    "|---|---|---|---|---|---|",
+  );
+  const scoresOf = (model: string, sample: string, arm: string) => {
+    const r = relays.find((x) => x.model === model && x.sample === sample && x.arm === arm);
+    return r === undefined ? [] : relayScores(r);
   };
   const keys = [...new Set(relays.map((r) => `${r.model}\u0000${r.sample}`))].sort();
   for (const key of keys) {
     const [model, sample] = key.split("\u0000") as [string, string];
-    const a = finalOf(
-      relays.find((r) => r.model === model && r.sample === sample && r.arm === "d52-tools"),
-    );
-    const b = finalOf(
-      relays.find((r) => r.model === model && r.sample === sample && r.arm === "bft-edit"),
-    );
+    const sa = scoresOf(model, sample, "d52-tools");
+    const sb = scoresOf(model, sample, "bft-edit");
+    const trip = Math.min(sa.length, sb.length);
+    const a = trip === 0 ? null : (sa[trip - 1] ?? null);
+    const b = trip === 0 ? null : (sb[trip - 1] ?? null);
     lines.push(
-      `| ${model} | ${sample} | ${rs(a)} | ${rs(b)} | ${a === null || b === null ? "-" : (100 * (b - a)).toFixed(1)} |`,
+      `| ${model} | ${sample} | ${trip === 0 ? "-" : trip} | ${rs(a)} | ${rs(b)} | ${a === null || b === null ? "-" : (100 * (b - a)).toFixed(1)} |`,
     );
   }
 
