@@ -1,6 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
+import { modelDirName } from "@bfe/core";
 import type { RelayInteraction, RelayResult } from "@bfe/core";
 
 import { runCostUsd } from "./pricing.ts";
@@ -8,23 +9,85 @@ import { runCostUsd } from "./pricing.ts";
 /** A score drop of this much or more in one round trip is a critical error, as in the paper. */
 export const CRITICAL_DROP = 0.1;
 
-/** Reads every `relays/<model>/<arm>/<sample>/relay.json` under a run folder. */
+/**
+ * Reads every `relays/<model>/<arm>/<sample>/relay.json` under a run folder.
+ * A relay with no `relay.json` (its run was stopped) is rebuilt from its saved
+ * interactions and the run manifest, and marked incomplete.
+ */
 export async function collectRelays(outDir: string): Promise<RelayResult[]> {
   const out: RelayResult[] = [];
   const root = join(outDir, "relays");
+  const manifest = await readJsonFile<Manifest>(join(outDir, "manifest.json"));
   for (const model of await dirs(root)) {
     for (const arm of await dirs(join(root, model))) {
       for (const sample of await dirs(join(root, model, arm))) {
-        const text = await readFile(join(root, model, arm, sample, "relay.json"), "utf8").catch(
-          () => null,
-        );
-        if (text !== null) out.push(JSON.parse(text) as RelayResult);
+        const dir = join(root, model, arm, sample);
+        const relay =
+          (await readJsonFile<RelayResult>(join(dir, "relay.json"))) ??
+          (manifest === null ? null : await partialRelay(dir, manifest, model, arm, sample));
+        if (relay !== null) out.push(relay);
       }
     }
   }
   return out.sort((a, b) =>
     `${a.model}/${a.arm}/${a.sample}`.localeCompare(`${b.model}/${b.arm}/${b.sample}`),
   );
+}
+
+/** The fields of the `d52` manifest that a partial relay needs. */
+interface Manifest {
+  readonly models: readonly string[];
+  readonly roundTrips: number;
+  readonly seed: number;
+  readonly distractors: boolean;
+  readonly samples: readonly {
+    readonly id: string;
+    readonly domain: string;
+    readonly forwardOrder: readonly string[];
+  }[];
+}
+
+async function partialRelay(
+  dir: string,
+  manifest: Manifest,
+  modelDir: string,
+  arm: string,
+  sampleId: string,
+): Promise<RelayResult | null> {
+  const sample = manifest.samples.find((s) => s.id === sampleId);
+  const model = manifest.models.find((m) => modelDirName(m) === modelDir);
+  if (sample === undefined || model === undefined) return null;
+  const interactions: RelayInteraction[] = [];
+  const errorAttemptMetrics: RelayInteraction["metrics"][] = [];
+  for (const step of (await dirs(dir)).sort()) {
+    const names = (await readdir(join(dir, step))).sort();
+    for (const name of names.filter((n) => /^error-\d+\.json$/.test(n))) {
+      const failed = await readJsonFile<RelayInteraction>(join(dir, step, name));
+      if (failed !== null) errorAttemptMetrics.push(failed.metrics);
+    }
+    const saved = await readJsonFile<RelayInteraction>(join(dir, step, "interaction.json"));
+    if (saved !== null && saved.end !== "error") interactions.push(saved);
+  }
+  return {
+    schema: "relay/1",
+    sample: sampleId,
+    domain: sample.domain,
+    arm,
+    model,
+    roundTrips: manifest.roundTrips,
+    seed: manifest.seed,
+    distractors: manifest.distractors,
+    forwardOrder: sample.forwardOrder,
+    complete: false,
+    providerErrors: errorAttemptMetrics.length,
+    errorAttemptMetrics,
+    interactions,
+  };
+}
+
+async function readJsonFile<T>(path: string): Promise<T | null> {
+  const text = await readFile(path, "utf8").catch(() => null);
+  return text === null ? null : (JSON.parse(text) as T);
 }
 
 async function dirs(path: string): Promise<string[]> {

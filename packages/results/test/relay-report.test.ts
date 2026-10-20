@@ -81,3 +81,36 @@ test("the report has RS@k columns, the paired difference, and card-rate cost", (
   expect(md).toContain("read_file 4, write_file 4");
   expect(md).toMatch(/\| 0\.0008 \|/);
 });
+
+test("collectRelays rebuilds a stopped relay from its saved interactions", async () => {
+  const { mkdtemp, mkdir, rm, writeFile } = await import("node:fs/promises");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const { collectRelays } = await import("../src/relay-report.ts");
+  const out = await mkdtemp(join(tmpdir(), "relay-report-"));
+  try {
+    const manifest = {
+      models: ["z-ai/glm-5.3-flash"],
+      roundTrips: 2,
+      seed: 52,
+      distractors: true,
+      samples: [{ id: "docker1", domain: "docker", forwardOrder: ["x", "y"] }],
+    };
+    await writeFile(join(out, "manifest.json"), JSON.stringify(manifest));
+    const dir = join(out, "relays", "z-ai_glm-5.3-flash", "bft-edit", "docker1");
+    await mkdir(join(dir, "i01"), { recursive: true });
+    await mkdir(join(dir, "i02"), { recursive: true });
+    await writeFile(join(dir, "i01", "interaction.json"), JSON.stringify(step(0, null)));
+    await writeFile(join(dir, "i02", "error-1.json"), JSON.stringify(step(1, null)));
+    const [relay] = await collectRelays(out);
+    expect(relay).toMatchObject({
+      model: "z-ai/glm-5.3-flash",
+      complete: false,
+      providerErrors: 1,
+    });
+    expect(relay!.interactions).toHaveLength(1);
+    expect(relay!.forwardOrder).toEqual(["x", "y"]);
+  } finally {
+    await rm(out, { recursive: true, force: true });
+  }
+});
