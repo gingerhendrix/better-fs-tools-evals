@@ -123,7 +123,7 @@ export async function runRelay(options: RelayOptions): Promise<RelayResult> {
     distractors: options.distractors,
     forwardOrder: options.forwardOrder,
     complete,
-    providerErrors: await countErrorFiles(relayDir),
+    ...(await errorAttempts(relayDir)),
     interactions,
   };
   await writeJson(join(relayDir, "relay.json"), relay);
@@ -194,7 +194,11 @@ async function runInteraction(
   const names = Object.keys(after).sort();
   const fileSet = checkFileSet(names, target.targetFiles);
   const backward = step.direction === "backward";
-  const score = backward ? await scoreStep(options.scorer, sample, after, fileSet) : null;
+  // A failed attempt is not scored: its files are a half-done edit that the relay throws away.
+  const score =
+    backward && loop.end !== "error"
+      ? await scoreStep(options.scorer, sample, after, fileSet)
+      : null;
 
   const calls = session.calls();
   const toolErrors = { ...loop.metrics.toolErrors };
@@ -270,14 +274,18 @@ async function readSaved(
   return { interaction, files: snapshot.files };
 }
 
-async function countErrorFiles(relayDir: string): Promise<number> {
-  let count = 0;
+/** The `error-<ms>.json` files of a relay: how many, and the tokens each one used. */
+async function errorAttempts(relayDir: string) {
+  const errorAttemptMetrics: RelayInteraction["metrics"][] = [];
   for (const entry of await readdir(relayDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
-    const names = await readdir(join(relayDir, entry.name));
-    count += names.filter((n) => /^error-\d+\.json$/.test(n)).length;
+    for (const name of (await readdir(join(relayDir, entry.name))).sort()) {
+      if (!/^error-\d+\.json$/.test(name)) continue;
+      const failed = await readJson<RelayInteraction>(join(relayDir, entry.name, name));
+      if (failed !== null) errorAttemptMetrics.push(failed.metrics);
+    }
   }
-  return count;
+  return { providerErrors: errorAttemptMetrics.length, errorAttemptMetrics };
 }
 
 async function readJson<T>(path: string): Promise<T | null> {

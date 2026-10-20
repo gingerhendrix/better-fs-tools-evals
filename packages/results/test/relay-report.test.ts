@@ -62,6 +62,7 @@ const relay = (arm: string, scores: (number | null)[]): RelayResult => ({
   forwardOrder: scores.map(() => "x"),
   complete: true,
   providerErrors: 0,
+  errorAttemptMetrics: [],
   interactions: scores.flatMap((s, i) => [step(2 * i, null), step(2 * i + 1, s)]),
 });
 

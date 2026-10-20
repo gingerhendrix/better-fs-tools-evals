@@ -223,15 +223,23 @@ export function relayReport(relays: readonly RelayResult[]): string {
 
   lines.push("", "## Tokens and cost", "");
   lines.push(
-    "| Model | Arm | Interactions | Input | Cached input | Output | Reasoning | Mean input per interaction | Mean output per interaction | Cost (USD, card rates) |",
-    "|---|---|---|---|---|---|---|---|---|---|",
+    "Token totals include failed provider attempts. The means are over saved interactions only.",
+    "",
+    "| Model | Arm | Interactions | Failed attempts | Input | Cached input | Output | Reasoning | Mean input per interaction | Mean output per interaction | Cost (USD, card rates) |",
+    "|---|---|---|---|---|---|---|---|---|---|---|",
   );
   for (const g of groupBy(relays, false)) {
     const rows = all(g);
-    const costs = rows.map((i) => interactionCostUsd(g.model, i));
+    const metrics = [
+      ...rows.map((i) => i.metrics),
+      ...g.relays.flatMap((r) => r.errorAttemptMetrics ?? []),
+    ];
+    const total = (f: (m: RelayInteraction["metrics"]) => number) =>
+      metrics.reduce((a, m) => a + f(m), 0);
+    const costs = metrics.map((m) => runCostUsd(g.model, m));
     const cost = costs.some((c) => c === null) ? null : costs.reduce<number>((a, c) => a + c!, 0);
     lines.push(
-      `| ${g.model} | ${g.arm} | ${rows.length} | ${sum(rows, (i) => i.metrics.inputTokens)} | ${sum(rows, (i) => i.metrics.cachedInputTokens)} | ${sum(rows, (i) => i.metrics.outputTokens)} | ${sum(rows, (i) => i.metrics.reasoningTokens)} | ${fmt(mean(rows.map((i) => i.metrics.inputTokens)), 0)} | ${fmt(mean(rows.map((i) => i.metrics.outputTokens)), 0)} | ${cost === null ? "- (quota)" : cost.toFixed(4)} |`,
+      `| ${g.model} | ${g.arm} | ${rows.length} | ${metrics.length - rows.length} | ${total((m) => m.inputTokens)} | ${total((m) => m.cachedInputTokens)} | ${total((m) => m.outputTokens)} | ${total((m) => m.reasoningTokens)} | ${fmt(mean(rows.map((i) => i.metrics.inputTokens)), 0)} | ${fmt(mean(rows.map((i) => i.metrics.outputTokens)), 0)} | ${cost === null ? "- (quota)" : cost.toFixed(4)} |`,
     );
   }
 

@@ -205,6 +205,7 @@ test("a provider error stops the relay, and a second run resumes from the last s
   expect(first.complete).toBe(false);
   expect(first.interactions).toHaveLength(1);
   expect(first.providerErrors).toBe(2);
+  expect(first.errorAttemptMetrics).toHaveLength(2);
   expect(calls).toBeGreaterThan(0);
 
   const second = await runRelay(options(D52_TOOLS_ARM, good));

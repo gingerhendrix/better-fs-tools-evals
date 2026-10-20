@@ -120,6 +120,8 @@ export interface RelayResult {
   readonly complete: boolean;
   /** Interactions that ended in a provider error, retries included. */
   readonly providerErrors: number;
+  /** Tokens spent in those failed attempts. They count in the cost, not in the measures. */
+  readonly errorAttemptMetrics: readonly RunMetrics[];
   readonly interactions: readonly RelayInteraction[];
 }
 
