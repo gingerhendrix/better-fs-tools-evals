@@ -78,6 +78,11 @@ test("the report has RS@k columns, the paired difference, and card-rate cost", (
   expect(md).toContain("| RS@2 | RS@4 |");
   expect(md).toContain("| z-ai/glm-5.3-flash | docker | bft-edit | 1 | 100.0 | 90.0 | 1 | 0 |");
   expect(md).toContain("| z-ai/glm-5.3-flash | docker1 | 80.0 | 90.0 | 10.0 |");
+  const short = { ...relay("bft-edit", [1, 0.9]), sample: "docker2" };
+  const partial = { ...short, interactions: short.interactions.slice(0, 2), complete: false };
+  expect(relayReport([relay("bft-edit", [1, 0.9]), partial])).toContain(
+    "| z-ai/glm-5.3-flash | docker | bft-edit | 2 | 100.0 | 90.0 (1) |",
+  );
   expect(md).toContain("read_file 4, write_file 4");
   expect(md).toMatch(/\| 0\.0008 \|/);
 });

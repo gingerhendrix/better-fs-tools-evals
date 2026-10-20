@@ -143,14 +143,19 @@ const fmt = (x: number | null, digits = 1) => (x === null ? "-" : x.toFixed(digi
 const pct = (n: number, d: number) => (d === 0 ? "-" : `${((100 * n) / d).toFixed(0)}%`);
 const rs = (x: number | null) => (x === null ? "-" : (100 * x).toFixed(1));
 
-/** RS@k: the mean backward score after round trip k/2, over the relays that reached it. */
-function rsAt(g: Group, roundTrip: number): number | null {
-  return mean(
-    g.relays.flatMap((r) => {
-      const s = relayScores(r)[roundTrip - 1];
-      return s === undefined || s === null ? [] : [s];
-    }),
-  );
+/**
+ * RS@k: the mean backward score after round trip k/2, over the relays that
+ * reached it. When fewer than all relays reached it, the count follows in brackets.
+ */
+function rsAt(g: Group, roundTrip: number): string {
+  const scores = g.relays.flatMap((r) => {
+    const s = relayScores(r)[roundTrip - 1];
+    return s === undefined || s === null ? [] : [s];
+  });
+  const value = rs(mean(scores));
+  return scores.length < g.relays.length && scores.length > 0
+    ? `${value} (${scores.length})`
+    : value;
 }
 
 function sum(rows: readonly RelayInteraction[], f: (i: RelayInteraction) => number): number {
@@ -189,7 +194,7 @@ export function relayReport(relays: readonly RelayResult[]): string {
       () => 1,
     )} interactions.`,
     "",
-    "RS@k is the mean seed score (x100) after the backward step of round trip k/2. A critical error is a round trip whose score drops by 10 points or more.",
+    "RS@k is the mean seed score (x100) after the backward step of round trip k/2, over the relays that reached it. A count in brackets means fewer than all relays reached it. A critical error is a round trip whose score drops by 10 points or more.",
     "",
   );
 
@@ -202,7 +207,7 @@ export function relayReport(relays: readonly RelayResult[]): string {
     const unscored = backward(g).filter((i) => i.score === null || i.score.score === null).length;
     const crit = g.relays.reduce((a, r) => a + criticalErrors(r), 0);
     lines.push(
-      `| ${g.model} | ${g.domain} | ${g.arm} | ${g.relays.length} | ${trips.map((t) => rs(rsAt(g, t))).join(" | ")} | ${crit} | ${unscored} |`,
+      `| ${g.model} | ${g.domain} | ${g.arm} | ${g.relays.length} | ${trips.map((t) => rsAt(g, t)).join(" | ")} | ${crit} | ${unscored} |`,
     );
   }
 
