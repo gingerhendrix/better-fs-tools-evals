@@ -21,7 +21,7 @@ Runners write run folders. Viewers, reports, and later rescoring read them. A vi
 core <- results <- runner <- harbor
 core <- providers <- runner, harbor
 core <- tools     <- runner
-core <- scorer-files, source-omp-edit, source-explicit-edit
+core <- scorer-files, source-omp-edit, source-explicit-edit, source-delegate52
 cli    -> core, results, runner, tools, scorer-files, sources
 viewer -> core, results
 ```
@@ -36,6 +36,7 @@ viewer -> core, results
 | `@bfe/scorer-files`         | `core`                                                         |
 | `@bfe/source-omp-edit`      | `core`                                                         |
 | `@bfe/source-explicit-edit` | `core`                                                         |
+| `@bfe/source-delegate52`    | `core`                                                         |
 | `@bfe/harbor`               | `core`, `providers`, `results`, `runner`, `@better-fs-tools/*` |
 | `@bfe/cli`                  | Every `@bfe/*` package except `harbor` and `viewer`            |
 | `@bfe/viewer`               | `core`, `results`                                              |
@@ -55,6 +56,8 @@ Rules behind the table:
 - **Fixture folder loader.** Both sources use one folder layout: `prompt.md`, `input/`, `expected/`, and `metadata.json`. So `loadTask` and `listFiles` live in `core`. The viewer's fixture view and the scorers use them without a source package.
 - **Browser code.** `@bfe/results/stats` has no Node imports. The viewer's React app imports values only from that subpath, and types from `@bfe/results` with `import type`.
 - **Tool versions in the manifest.** `runProvenance` merges the npm dependency versions of `runner`, `providers`, and `tools`. `dependencyVersions` in `core` finds each installed `package.json` by walking up `node_modules`, because the published tool packages do not export `package.json`.
+
+- **Relays.** `core` holds the relay contracts (`RelaySample`, `RelayScorer`, `RelayInteraction`, `RelayResult`). `source-delegate52` loads samples and supplies a bridge scorer. `tools` holds the relay arms with their prompts. `runner` drives a relay and gets the scorer from the CLI, so it never imports a source. `results` reads `relay.json` files and writes the relay report.
 
 ## Adding parts
 

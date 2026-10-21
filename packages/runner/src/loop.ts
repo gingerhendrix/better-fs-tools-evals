@@ -20,6 +20,13 @@ export interface LoopOptions {
   readonly stepLog: string;
   /** Called after each step with tool results. true stops the loop early (the OMP early stop). */
   readonly isSolved?: () => Promise<boolean>;
+  /**
+   * Called when the model replies with no tool call. A string is sent as the
+   * next user message and the loop goes on (the DELEGATE-52 nudge). null ends the loop.
+   */
+  readonly onNoToolCall?: () => string | null;
+  /** Called after each step with tool calls. A value ends the loop with that state. */
+  readonly afterToolStep?: (metrics: RunMetrics) => EndState | null;
 }
 
 export interface LoopResult {
@@ -59,7 +66,14 @@ export async function runLoop(options: LoopOptions): Promise<LoopResult> {
       options.stepLog,
       `${JSON.stringify({ step, finishReason: result.finishReason, usage: result.usage, content: summarise(parts) })}\n`,
     );
-    if (result.toolCalls.length === 0) return { end: "done", error: null, metrics, finalText };
+    if (result.toolCalls.length === 0) {
+      const nudge = options.onNoToolCall?.() ?? null;
+      if (nudge === null) return { end: "done", error: null, metrics, finalText };
+      messages.push({ role: "user", content: nudge });
+      continue;
+    }
+    const stop = options.afterToolStep?.(metrics) ?? null;
+    if (stop !== null) return { end: stop, error: null, metrics, finalText };
     if (options.isSolved !== undefined && (await options.isSolved())) {
       return { end: "matched", error: null, metrics, finalText };
     }

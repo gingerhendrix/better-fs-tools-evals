@@ -97,7 +97,8 @@ export async function runCell(cell: Cell, options: RunOptions): Promise<CellResu
   return result;
 }
 
-async function countHttpErrors(file: string): Promise<number> {
+/** Non-200 responses in one `http.jsonl`. */
+export async function countHttpErrors(file: string): Promise<number> {
   const text = await readFile(file, "utf8").catch(() => "");
   return text
     .split("\n")

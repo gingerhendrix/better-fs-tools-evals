@@ -31,6 +31,55 @@ Options for `run`:
 
 `run` skips a cell that has a `result.json`, unless that cell ended in a provider error. So a second `run` with the same flags resumes the matrix.
 
+## DELEGATE-52
+
+```sh
+export BFE_D52_DATA=/path/to/delegate52.jsonl
+export BFE_D52_REPO=/path/to/DELEGATE52        # microsoft/DELEGATE52 checkout
+export BFE_D52_UV_ENV=/path/to/uv-env          # optional: where uv keeps the bridge venv
+
+bun run eval d52 --out <dir> --domains docker,json --arms d52-tools,bft-edit \
+  --models z-ai/glm-5.3-flash,codex-oauth:gpt-6-luna:medium --round-trips 5 --seed 52
+bun run eval d52-report --out <dir>
+```
+
+| Flag                 | Default              | Meaning                                                         |
+| -------------------- | -------------------- | --------------------------------------------------------------- |
+| `--domains`          | `docker,json`        | Sample domains. The bridge scores only these two                |
+| `--samples`          | all in `--domains`   | Sample ids, for a pilot                                         |
+| `--arms`             | `d52-tools,bft-edit` | Relay arms                                                      |
+| `--round-trips`      | `5`                  | Round trips per relay. Each has a forward and a backward step   |
+| `--seed`             | `52`                 | Seed for the forward-edit order. Same order for every arm/model |
+| `--no-distractors`   | off                  | Leave out the distractor files                                  |
+| `--max-steps`        | `25`                 | Model calls per interaction (upstream `MAX_TURNS`)              |
+| `--max-total-tokens` | `500000`             | Input plus output tokens per interaction (upstream budget)      |
+| `--retries`          | `2`                  | Extra tries of an interaction after a provider error            |
+| `--concurrency`      | `4`                  | Relays in parallel                                              |
+
+Each interaction gets a fresh workspace with the current files and the distractor files. After the loop the relay strips the distractors, checks the file set against the target state, and, on backward steps, scores the files through the bridge and compares them with the seed bytes. A second `d52` with the same flags resumes every relay after its last saved snapshot.
+
+Differences from upstream `model_agentic.py` in the `d52-tools` port:
+
+- Files live in a folder, not in memory. A name that leaves the folder is refused.
+- `run_python` uses the system `/usr/bin/python3`, with the same bwrap flags.
+- The nudge goes once. Upstream nudges on every turn with no tool call and no write.
+- No parsing of tool calls written as text, no temperature 1.0, and no 16k output cap. The loop uses the provider defaults.
+- The forward-edit order is seeded. Upstream uses Python's global `random`.
+
+Output:
+
+```text
+<out>/manifest.json   dataset sha256, upstream commit, seed, round trips, arms, models, tool versions
+<out>/report.md
+<out>/relays/<model>/<arm>/<sample>/
+  relay.json          summary of the relay
+  i01/ ... i10/       one folder per interaction
+    interaction.json  end state, file set, score, seed comparison, tool calls, tokens
+    snapshot.json     the files after the interaction, distractors stripped
+    steps.jsonl, http.jsonl
+    error-<ms>.json   an attempt that ended in a provider error
+```
+
 ## Output
 
 ```text

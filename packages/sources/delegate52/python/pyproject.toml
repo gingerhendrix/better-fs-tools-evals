@@ -1,0 +1,10 @@
+[project]
+name = "bfe-delegate52-bridge"
+version = "0.0.0"
+description = "Runs the upstream DELEGATE-52 docker and json scorers for @bfe/source-delegate52."
+requires-python = ">=3.12,<3.13"
+# domain_base imports model_openai, which imports openai. The scorers use ujson and PyYAML.
+dependencies = ["openai>=1.0", "pyyaml>=6.0", "ujson>=5.0"]
+
+[tool.uv]
+package = false

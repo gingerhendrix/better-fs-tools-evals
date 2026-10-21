@@ -1,0 +1,13 @@
+{
+  "name": "@bfe/source-delegate52",
+  "version": "0.0.0",
+  "private": true,
+  "description": "DELEGATE-52 relay samples, the seeded forward-edit order, and the Python scorer bridge.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@bfe/core": "workspace:*"
+  }
+}

@@ -14,3 +14,17 @@ export { listFiles, loadTask, loadTasks } from "./task.ts";
 export type { EditTask } from "./task.ts";
 export { dependencyVersions } from "./versions.ts";
 export type { TaskSource } from "./source.ts";
+export { relayPath } from "./relay.ts";
+export type {
+  FileMap,
+  FileSetCheck,
+  RelayDirection,
+  RelayInteraction,
+  RelayPrompt,
+  RelayResult,
+  RelaySample,
+  RelayScore,
+  RelayScorer,
+  RelayState,
+  SeedComparison,
+} from "./relay.ts";

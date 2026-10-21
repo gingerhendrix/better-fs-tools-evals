@@ -2,7 +2,7 @@
   "name": "@bfe/cli",
   "version": "0.0.0",
   "private": true,
-  "description": "The bfe command line: run, report, and list.",
+  "description": "The bfe command line: run, report, list, and the DELEGATE-52 relay commands.",
   "bin": {
     "bfe": "./src/cli.ts"
   },
@@ -12,6 +12,7 @@
     "@bfe/results": "workspace:*",
     "@bfe/runner": "workspace:*",
     "@bfe/scorer-files": "workspace:*",
+    "@bfe/source-delegate52": "workspace:*",
     "@bfe/source-explicit-edit": "workspace:*",
     "@bfe/source-omp-edit": "workspace:*",
     "@bfe/tools": "workspace:*"
