@@ -2,7 +2,7 @@
 
 Evals for [Better FS Tools](https://github.com/gingerhendrix/better-fs-tools). The harness runs edit benchmarks through an AI SDK agent loop with different tool sets ("arms"). It writes each run to a folder. A browser viewer and a Markdown report read those folders.
 
-This repository is private and is not published. It uses the published `@better-fs-tools/*` packages at the versions pinned in the root `package.json` catalog.
+This repository is public. It is not published to npm. It uses the published `@better-fs-tools/*` packages at the versions pinned in the root `package.json` catalog.
 
 ## Quick start
 
