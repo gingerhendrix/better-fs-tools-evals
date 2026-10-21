@@ -5,10 +5,8 @@ import type { RunMetrics } from "@bfe/core";
 
 import { files, isRecord, num, readJson, str, subdirs, sum } from "./fs-json.ts";
 import { runCostUsd } from "./pricing.ts";
+import { CRITICAL_DROP } from "./relay-report.ts";
 import type { Batch, BatchRead, RunRow, RunSource } from "./catalog.ts";
-
-/** A backward-step score drop of this much or more is a critical error, as in the DELEGATE-52 paper. */
-export const CRITICAL_DROP = 0.1;
 
 /** The `interaction.json` fields the viewer reads. Every field is optional, so old runs still load. */
 interface Interaction {

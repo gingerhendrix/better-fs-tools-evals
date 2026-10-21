@@ -1,7 +1,6 @@
 // Node-side read API. Browser code imports `@bfe/results/stats` instead,
 // and imports types from here with `import type`.
 export { readJson, scanCatalog } from "./catalog.ts";
-export { CRITICAL_DROP } from "./relay-catalog.ts";
 export type { Batch, BatchKind, Catalog, RunRow, RunSource, ScanOptions } from "./catalog.ts";
 export { loadFixture } from "./fixture.ts";
 export type { FixtureView } from "./fixture.ts";
