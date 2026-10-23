@@ -35,3 +35,7 @@ A live run calls paid models or uses subscription quota. [docs/running.md](docs/
 | `apps/viewer`                    | `@bfe/viewer`               | Run viewer                                                             |
 
 [docs/architecture.md](docs/architecture.md) explains the package rules. [docs/benchmarks.md](docs/benchmarks.md) lists the benchmark sources. [EXTRACTION.md](EXTRACTION.md) records where the code came from.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
